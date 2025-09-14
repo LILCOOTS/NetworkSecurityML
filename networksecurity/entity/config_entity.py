@@ -3,7 +3,7 @@ import os
 from networksecurity.constants import training_pipeline
 
 class TrainingPipelineConfig:
-    def __init__(self, timestamp = datetime.now().strftime("%m_%d_%Y_%H:%M:%S")):
+    def __init__(self, timestamp = datetime.now().strftime("%m_%d_%Y_%H-%M-%S")):
         self.pipeline_name = training_pipeline.PIPELINE_NAME
         self.artifact_dir_name = os.path.join(training_pipeline.ARTIFACT_DIR_NAME, timestamp)
         self.artifact_dir = os.path.join(self.artifact_dir_name, timestamp)
@@ -25,3 +25,20 @@ class DataIngestionConfig:
         self.train_test_split_ratio: float = training_pipeline.DATA_INGESTION_TRAIN_TEST_SPLIT_RATIO
 
 
+class DataValidationConfig:
+    def __init__(self, training_pipeline_config: TrainingPipelineConfig):
+        self.data_validation_dir: str = os.path.join(training_pipeline_config.artifact_dir, training_pipeline.DATA_VALIDATION_DIR_NAME)
+        
+        self.valid_data_dir: str = os.path.join(self.data_validation_dir, training_pipeline.DATA_VALIDATION_VALID_DIR_NAME)
+        self.invalid_data_dir: str = os.path.join(self.data_validation_dir, training_pipeline.DATA_VALIDATION_INVALID_DIR_NAME)
+        
+        self.valid_train_file_path: str = os.path.join(self.valid_data_dir, training_pipeline.TRAIN_FILE_NAME)
+        self.valid_test_file_path: str = os.path.join(self.valid_data_dir, training_pipeline.TEST_FILE_NAME)
+        self.invalid_train_file_path: str = os.path.join(self.invalid_data_dir, training_pipeline.TRAIN_FILE_NAME)
+        self.invalid_test_file_path: str = os.path.join(self.invalid_data_dir, training_pipeline.TEST_FILE_NAME)
+        
+        self.drift_report_file_path: str = os.path.join(
+            self.data_validation_dir, training_pipeline.DATA_VALIDATION_DRIFT_REPORT_DIR_NAME, training_pipeline.DATA_VALIDATION_DRIFT_REPORT_FILE_NAME
+        )
+
+        

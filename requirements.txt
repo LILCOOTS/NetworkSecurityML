@@ -5,5 +5,9 @@ matplotlib
 scikit-learn
 pymongo
 pymongo[srv]
+certifi
+dill
+pyaml
+
 
 #-e .
