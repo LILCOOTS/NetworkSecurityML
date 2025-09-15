@@ -8,6 +8,6 @@ pymongo[srv]
 certifi
 dill
 pyaml
-
+pickle
 
 #-e .
