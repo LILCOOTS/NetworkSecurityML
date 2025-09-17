@@ -9,5 +9,6 @@ certifi
 dill
 pyaml
 pickle
+mlflow
 
 #-e .

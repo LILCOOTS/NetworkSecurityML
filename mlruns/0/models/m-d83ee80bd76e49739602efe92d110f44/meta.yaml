@@ -1,0 +1,10 @@
+artifact_location: file:///C:/Users/asana/Desktop/ML/Practice%20and%20%20Projects/NetworkSecurity/mlruns/0/models/m-d83ee80bd76e49739602efe92d110f44/artifacts
+creation_timestamp: 1758114235841
+experiment_id: '0'
+last_updated_timestamp: 1758114238272
+model_id: m-d83ee80bd76e49739602efe92d110f44
+model_type: null
+name: model
+source_run_id: 00e35098291249bfaa9923637f7092a6
+status: 2
+status_message: null
