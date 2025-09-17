@@ -14,12 +14,15 @@ from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier,
 from sklearn.metrics import accuracy_score
 from networksecurity.exception.exception import NetworkSecurityException
 from networksecurity.logging.logger import logging
+from networksecurity.constants import training_pipeline
 from networksecurity.entity.artifact_entity import DataTransformationArtifact, ModelTrainerArtifact, ClassificationMetricArtifact
 from networksecurity.entity.config_entity import ModelTrainerConfig
 from networksecurity.utils.main_utils.utils import save_pickle_obj, load_numpy_array, load_pickle_obj, evaluate_models
 from networksecurity.utils.ml_utils.metric.classification_metric import get_classification_metrics
 from networksecurity.utils.ml_utils.model.estimator import NetworkModel
 
+import dagshub
+dagshub.init(repo_owner='LILCOOTS', repo_name='NetworkSecurityML', mlflow=True)
 class ModelTrainer:
     def __init__(self, data_transformation_artifact: DataTransformationArtifact, model_trainer_config: ModelTrainerConfig):
         try:
@@ -48,7 +51,16 @@ class ModelTrainer:
                 mlflow.log_metric("F1_Score", f1_score)
                 mlflow.log_metric("Precision", precision)
                 mlflow.log_metric("Recall", recall)
-                mlflow.sklearn.log_model(best_model, "model")
+                
+                # Log model parameters instead of the model object itself
+                # since DagsHub doesn't support mlflow.sklearn.log_model()
+                mlflow.log_param("model_type", type(best_model).__name__)
+                if hasattr(best_model, 'get_params'):
+                    model_params = best_model.get_params()
+                    for param_name, param_value in model_params.items():
+                        # Only log simple parameter types that MLflow can handle
+                        if isinstance(param_value, (int, float, str, bool)) or param_value is None:
+                            mlflow.log_param(f"model_{param_name}", param_value)
 
 
         except Exception as e:
@@ -124,6 +136,11 @@ class ModelTrainer:
             NetworkModelObj = NetworkModel(preprocessor=preprocessor, model=best_model)
             save_pickle_obj(file_path=self.model_trainer_config.trained_model_file_path, obj = NetworkModelObj)
 
+            final_dir = training_pipeline.MODEL_PUSHER_DIR_NAME
+            os.makedirs(final_dir, exist_ok=True)
+            final_preprocessor_path = os.path.join(final_dir, "model.pkl")
+            save_pickle_obj(file_path=final_preprocessor_path, obj=best_model)
+
             model_trainer_artifact = ModelTrainerArtifact(
                 trained_model_file_path=self.model_trainer_config.trained_model_file_path,
                 train_metric_artifact=train_classification_metric,
@@ -148,10 +165,8 @@ class ModelTrainer:
             X_train, y_train = train_arr[:, :-1], train_arr[:, -1]
             X_test, y_test = test_arr[:, :-1], test_arr[:, -1]
 
-            model = self.train_model(X_train, y_train, X_test, y_test)
-            logging.info("Model training completed")
-
             model_trainer_artifact = self.train_model(X_train, y_train, X_test, y_test)
+            logging.info("Model training completed")
             logging.info(f"Model Trainer artifact: {model_trainer_artifact}")
             return model_trainer_artifact
             

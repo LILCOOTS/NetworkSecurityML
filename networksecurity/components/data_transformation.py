@@ -75,6 +75,11 @@ class DataTransformation:
             save_numpy_array_data(file_path=self.data_transformation_config.transformed_test_file_path, array=test_arr)
             save_pickle_obj(file_path=self.data_transformation_config.transformed_object_file_path, obj=preprocessor_obj)
 
+            final_dir = training_pipeline.MODEL_PUSHER_DIR_NAME
+            os.makedirs(final_dir, exist_ok=True)
+            final_preprocessor_path = os.path.join(final_dir, "preprocessor.pkl")
+            save_pickle_obj(file_path=final_preprocessor_path, obj=preprocessor_obj)
+
             # Prepare artifact
             data_transformation_artifact = DataTransformationArtifact(
                 transformed_object_file_path=self.data_transformation_config.transformed_object_file_path,
