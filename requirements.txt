@@ -8,7 +8,10 @@ pymongo[srv]
 certifi
 dill
 pyaml
-pickle
 mlflow
+uvicorn
+fastapi
+dagshub
+
 
 #-e .

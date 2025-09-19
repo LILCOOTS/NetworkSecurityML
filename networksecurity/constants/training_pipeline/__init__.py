@@ -23,6 +23,9 @@ SAVED_MODEL_FILE_NAME: str = "model.pkl"
 
 MODEL_PUSHER_DIR_NAME: str = "final_models"
 
+FINAL_PREPROCESSOR_PATH: str = "final_models/preprocessor.pkl"
+FINAL_MODEL_PATH: str = "final_models/model.pkl"
+
 '''Data ingestion related constants'''
 DATA_INGESTION_COLLECTION_NAME: str = "NetworkData"
 DATA_INGESTION_DATABASE_NAME: str = "NetworkDB"
